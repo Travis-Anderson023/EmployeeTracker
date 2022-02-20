@@ -24,7 +24,8 @@ const viewDepartments = async () => {
 }
 
 const viewRoles = async () => {
-    db.query("SELECT * FROM employee_role", function (err, result) {
+    //presented with the job title, role id, the department that role belongs to, and the salary for that role
+    db.query("SELECT employee_role.title, employee_role.id, department.name, employee_role.salary FROM employee_role INNER JOIN department ON employee_role.department_id = department.id INNER JOIN employee ON employee_role.id = employee.role_id", function (err, result) {
         if (err) throw err;
         console.log('');
         console.table(result);
@@ -32,7 +33,8 @@ const viewRoles = async () => {
 }
 
 const viewEmployees = async () => {
-    db.query("SELECT * FROM employee", function (err, result) {
+    //presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+    db.query(`SELECT employee.id, employee.first_name, employee.last_name, employee_role.title, department.name, employee_role.salary, CONCAT(m.first_name, ' ', m.last_name) 'manager_title' FROM employee INNER JOIN employee_role ON employee.role_id = employee_role.id INNER JOIN department ON employee_role.department_id = department.id LEFT JOIN employee m ON (employee.manager_id = m.id)`, function (err, result) {
         if (err) throw err;
         console.log('');
         console.table(result);
